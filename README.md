@@ -3,4 +3,4 @@ A simple tachometer implementation. This used to be a sub-module in [another pro
 
 It works by seetting up a periodic timer and an interrupt. 
 The interrupt intreases a counter each time GPIO alters state. 
-The timer calculates the number of alternations over time and presents that number to the 'clients'.
+The timer calculates the number of alternations over time and presents the frequency [Hz] to the 'clients'.
