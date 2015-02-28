@@ -23,7 +23,7 @@ static uint8_t tachometer_pin = 0;
 // forward declarations
 static void tachometer_disableInterrupt(void);
 static void tachometer_enableInterrupt(void);
-static void tachometer_intr_handler(void);
+static void tachometer_intr_handler(int8_t key);
 static void tachometer_timerFunc(void);
 
 static void
@@ -37,7 +37,7 @@ tachometer_enableInterrupt(void) {
 }
 
 static void
-tachometer_intr_handler(void) {
+tachometer_intr_handler(int8_t key) {
   uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
   //clear interrupt status
   GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(tachometer_pin));
