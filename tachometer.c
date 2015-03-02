@@ -23,7 +23,7 @@ static uint8_t tachometer_pin = 0;
 // forward declarations
 static void tachometer_disableInterrupt(void);
 static void tachometer_enableInterrupt(void);
-static void tachometer_intr_handler(int8_t key);
+static void tachometer_intr_handler(void* arg);
 static void tachometer_timerFunc(void);
 
 static void
@@ -37,7 +37,7 @@ tachometer_enableInterrupt(void) {
 }
 
 static void
-tachometer_intr_handler(int8_t key) {
+tachometer_intr_handler(void* arg) {
   uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
   //clear interrupt status
   GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(tachometer_pin));
@@ -66,7 +66,7 @@ tachometer_timerFunc(void) {
   bool aBit = GPIO_INPUT_GET(tachometer_pin);
   if (period>0){
     tachometer_sample = (1000000.0*(float)pulses)/(float)period;
-    if (false && (counter%3 == 0)) {
+    if (false && (counter%4 == 0)) {
       // print this every 4:th iteration
       os_printf("Tachometer: pulses: %d period:%d us ", pulses, period);
       os_printf("pinValue:%c tachometer_sample=%d\n",aBit?'1':'0', tachometer_sample);
@@ -83,7 +83,7 @@ tachometer_init(uint8_t ioPin) {
   os_timer_disarm(&tachometer_timer);
   os_timer_setfn(&tachometer_timer, (os_timer_func_t *) tachometer_timerFunc, NULL);
 
-  if (easygpio_attachInterrupt(tachometer_pin, EASYGPIO_NOPULL, tachometer_intr_handler)) {
+  if (easygpio_attachInterrupt(tachometer_pin, EASYGPIO_NOPULL, tachometer_intr_handler, NULL)) {
     // start the poll/sample timer
     os_timer_arm(&tachometer_timer, TACHOMETER_POLL_TIME, 1);
     tachometer_enableInterrupt();
